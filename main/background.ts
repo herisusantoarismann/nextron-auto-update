@@ -84,5 +84,5 @@ app.on("window-all-closed", () => {
 
 // IPC untuk komunikasi
 ipcMain.on("message", async (event, arg) => {
-  event.reply("message", `${arg} World! v1.0.2 ${autoUpdater.currentVersion}`);
+  event.reply("message", `${arg} World! ${autoUpdater.currentVersion}`);
 });
