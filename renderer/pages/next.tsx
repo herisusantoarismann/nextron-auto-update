@@ -3,6 +3,18 @@ import Head from "next/head";
 import Link from "next/link";
 
 export default function NextPage() {
+  React.useEffect(() => {
+    const updatesState = (value: string) => {
+      console.log(value);
+    };
+
+    try {
+      window.ipc.on("update-state", updatesState);
+    } catch (error) {
+      console.error("Error accessing ipcRenderer:", error);
+    }
+  }, []);
+
   return (
     <React.Fragment>
       <Head>

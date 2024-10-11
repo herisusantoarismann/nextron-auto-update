@@ -1,13 +1,15 @@
 import path from "path";
-import { app, autoUpdater, ipcMain, dialog } from "electron";
+import { app, ipcMain, dialog } from "electron";
 import serve from "electron-serve";
 import { createWindow } from "./helpers";
+import { autoUpdater } from "electron-updater";
 
 const isProd = process.env.NODE_ENV === "production";
 
 // Feed URL untuk auto-update
 const feed = `https://github.com/herisusantoarismann/nextron-auto-update/releases/latest/download/`;
-autoUpdater.setFeedURL({ url: feed });
+autoUpdater.setFeedURL(feed);
+autoUpdater.autoDownload = false;
 
 if (isProd) {
   serve({ directory: "app" });
@@ -35,20 +37,30 @@ if (isProd) {
   }
 
   // Cek untuk update saat aplikasi siap
-  autoUpdater.checkForUpdates();
+  autoUpdater.checkForUpdatesAndNotify();
 
   // Menangani update-available event
   autoUpdater.on("update-available", () => {
-    dialog.showMessageBox(mainWindow, {
-      type: "info",
-      buttons: ["Yes", "No"],
-      title: "Update Available",
-      message: "A new version is available.",
-    });
+    mainWindow.webContents.send("update-state", "update-available");
+
+    dialog
+      .showMessageBox(mainWindow, {
+        type: "info",
+        buttons: ["Yes", "No"],
+        title: "Update Available",
+        message: "A new version is available.",
+      })
+      .then((result) => {
+        if (result.response === 1) {
+          autoUpdater.downloadUpdate();
+        }
+      });
   });
 
   // Menangani update-downloaded event
   autoUpdater.on("update-downloaded", () => {
+    mainWindow.webContents.send("update-state", "update-downloaded");
+
     dialog
       .showMessageBox(mainWindow, {
         type: "info",
@@ -72,5 +84,5 @@ app.on("window-all-closed", () => {
 
 // IPC untuk komunikasi
 ipcMain.on("message", async (event, arg) => {
-  event.reply("message", `${arg} World!`);
+  event.reply("message", `${arg} World! v1.0.2`);
 });

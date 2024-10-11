@@ -1,16 +1,28 @@
-import React from 'react'
-import Head from 'next/head'
-import Link from 'next/link'
-import Image from 'next/image'
+import React from "react";
+import Head from "next/head";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function HomePage() {
-  const [message, setMessage] = React.useState('No message found')
+  const [message, setMessage] = React.useState("No message found");
 
   React.useEffect(() => {
-    window.ipc.on('message', (message: string) => {
-      setMessage(message)
-    })
-  }, [])
+    window.ipc.on("message", (message: string) => {
+      setMessage(message);
+    });
+  }, []);
+
+  React.useEffect(() => {
+    const updatesState = (value: string) => {
+      console.log(value);
+    };
+
+    try {
+      window.ipc.on("update-state", updatesState);
+    } catch (error) {
+      console.error("Error accessing ipcRenderer:", error);
+    }
+  }, []);
 
   return (
     <React.Fragment>
@@ -21,6 +33,7 @@ export default function HomePage() {
         <p>
           ⚡ Electron + Next.js ⚡ -<Link href="/next">Go to next page</Link>
         </p>
+        <p>Version v1.0.1</p>
         <Image
           src="/images/logo.png"
           alt="Logo image"
@@ -31,7 +44,7 @@ export default function HomePage() {
       <div>
         <button
           onClick={() => {
-            window.ipc.send('message', 'Hello')
+            window.ipc.send("message", "Hello");
           }}
         >
           Test IPC
@@ -39,5 +52,5 @@ export default function HomePage() {
         <p>{message}</p>
       </div>
     </React.Fragment>
-  )
+  );
 }
