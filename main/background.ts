@@ -7,8 +7,8 @@ import { autoUpdater } from "electron-updater";
 const isProd = process.env.NODE_ENV === "production";
 
 // Feed URL untuk auto-update
-const feed = `https://github.com/herisusantoarismann/nextron-auto-update/releases/latest/download/`;
-autoUpdater.setFeedURL(feed);
+// const feed = `https://github.com/herisusantoarismann/nextron-auto-update/releases/latest/download/`;
+// autoUpdater.setFeedURL(feed);
 autoUpdater.autoDownload = false;
 
 if (isProd) {
@@ -84,5 +84,5 @@ app.on("window-all-closed", () => {
 
 // IPC untuk komunikasi
 ipcMain.on("message", async (event, arg) => {
-  event.reply("message", `${arg} World! v1.0.2`);
+  event.reply("message", `${arg} World! v1.0.2 ${autoUpdater.currentVersion}`);
 });
