@@ -9,4 +9,7 @@ files:
     filter:
       - package.json
       - app
-publish: null
+publish:
+  - provider: github
+    owner: herisusantoarismann
+    repo: nextron-auto-update

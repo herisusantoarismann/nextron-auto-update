@@ -1,12 +1,12 @@
-import React from 'react'
-import Head from 'next/head'
-import Link from 'next/link'
+import React from "react";
+import Head from "next/head";
+import Link from "next/link";
 
 export default function NextPage() {
   return (
     <React.Fragment>
       <Head>
-        <title>Next - Nextron (basic-lang-typescript)</title>
+        <title>Next - Nextron (basic-lang-typescript) v1.0.1</title>
       </Head>
       <div>
         <p>
@@ -14,5 +14,5 @@ export default function NextPage() {
         </p>
       </div>
     </React.Fragment>
-  )
+  );
 }
