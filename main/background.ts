@@ -17,10 +17,12 @@ if (isProd) {
   app.setPath("userData", `${app.getPath("userData")} (development)`);
 }
 
+let mainWindow = null;
+
 (async () => {
   await app.whenReady();
 
-  const mainWindow = createWindow("main", {
+  mainWindow = createWindow("main", {
     width: 1000,
     height: 600,
     webPreferences: {
@@ -35,47 +37,47 @@ if (isProd) {
     await mainWindow.loadURL(`http://localhost:${port}/home`);
     mainWindow.webContents.openDevTools();
   }
-
-  // Cek untuk update saat aplikasi siap
-  autoUpdater.checkForUpdatesAndNotify();
-
-  // Menangani update-available event
-  autoUpdater.on("update-available", () => {
-    mainWindow.webContents.send("update-state", "update-available");
-
-    dialog
-      .showMessageBox(mainWindow, {
-        type: "info",
-        buttons: ["Yes", "No"],
-        title: "Update Available",
-        message: "A new version is available.",
-      })
-      .then((result) => {
-        if (result.response === 1) {
-          autoUpdater.downloadUpdate();
-        }
-      });
-  });
-
-  // Menangani update-downloaded event
-  autoUpdater.on("update-downloaded", () => {
-    mainWindow.webContents.send("update-state", "update-downloaded");
-
-    dialog
-      .showMessageBox(mainWindow, {
-        type: "info",
-        buttons: ["Restart", "Later"],
-        title: "Update Ready",
-        message: "Update downloaded. Restart to apply changes?",
-      })
-      .then((result) => {
-        if (result.response === 0) {
-          // 0 = Restart
-          autoUpdater.quitAndInstall();
-        }
-      });
-  });
 })();
+
+// Cek untuk update saat aplikasi siap
+autoUpdater.checkForUpdatesAndNotify();
+
+// Menangani update-available event
+autoUpdater.on("update-available", () => {
+  mainWindow.webContents.send("update-state", "update-available");
+
+  dialog
+    .showMessageBox(mainWindow, {
+      type: "info",
+      buttons: ["Yes", "No"],
+      title: "Update Available",
+      message: "A new version is available.",
+    })
+    .then((result) => {
+      if (result.response === 1) {
+        autoUpdater.downloadUpdate();
+      }
+    });
+});
+
+// Menangani update-downloaded event
+autoUpdater.on("update-downloaded", () => {
+  mainWindow.webContents.send("update-state", "update-downloaded");
+
+  dialog
+    .showMessageBox(mainWindow, {
+      type: "info",
+      buttons: ["Restart", "Later"],
+      title: "Update Ready",
+      message: "Update downloaded. Restart to apply changes?",
+    })
+    .then((result) => {
+      if (result.response === 0) {
+        // 0 = Restart
+        autoUpdater.quitAndInstall();
+      }
+    });
+});
 
 // Menangani penutupan jendela
 app.on("window-all-closed", () => {
