@@ -9,7 +9,7 @@ const isProd = process.env.NODE_ENV === "production";
 // Feed URL untuk auto-update
 // const feed = `https://github.com/herisusantoarismann/nextron-auto-update/releases/latest/download/`;
 // autoUpdater.setFeedURL(feed);
-autoUpdater.autoDownload = false;
+// autoUpdater.autoDownload = false;
 
 if (isProd) {
   serve({ directory: "app" });
@@ -39,44 +39,52 @@ let mainWindow = null;
   }
 })();
 
-// Cek untuk update saat aplikasi siap
-autoUpdater.checkForUpdatesAndNotify();
+app.on("ready", () => {
+  // Cek untuk update saat aplikasi siap
+  autoUpdater.checkForUpdatesAndNotify();
 
-// Menangani update-available event
-autoUpdater.on("update-available", () => {
-  mainWindow.webContents.send("update-state", "update-available");
+  // Menangani update-available event
+  autoUpdater.on("update-available", () => {
+    mainWindow.webContents.send("update-state", "update-available");
 
-  dialog
-    .showMessageBox(mainWindow, {
-      type: "info",
-      buttons: ["Yes", "No"],
-      title: "Update Available",
-      message: "A new version is available.",
-    })
-    .then((result) => {
-      if (result.response === 1) {
-        autoUpdater.downloadUpdate();
-      }
-    });
-});
+    dialog
+      .showMessageBox(mainWindow, {
+        type: "info",
+        buttons: ["Yes", "No"],
+        title: "Update Available",
+        message: "A new version is available.",
+      })
+      .then((result) => {
+        if (result.response === 0) {
+          autoUpdater.downloadUpdate();
+        }
+      });
+  });
 
-// Menangani update-downloaded event
-autoUpdater.on("update-downloaded", () => {
-  mainWindow.webContents.send("update-state", "update-downloaded");
+  // Menangani download-progress event
+  autoUpdater.on("download-progress", (progressObj) => {
+    const { percent } = progressObj;
+    mainWindow.webContents.send("download-progress", percent);
+  });
 
-  dialog
-    .showMessageBox(mainWindow, {
-      type: "info",
-      buttons: ["Restart", "Later"],
-      title: "Update Ready",
-      message: "Update downloaded. Restart to apply changes?",
-    })
-    .then((result) => {
-      if (result.response === 0) {
-        // 0 = Restart
-        autoUpdater.quitAndInstall();
-      }
-    });
+  // Menangani update-downloaded event
+  autoUpdater.on("update-downloaded", () => {
+    mainWindow.webContents.send("update-state", "update-downloaded");
+
+    dialog
+      .showMessageBox(mainWindow, {
+        type: "info",
+        buttons: ["Restart", "Later"],
+        title: "Update Ready",
+        message: "Update downloaded. Restart to apply changes?",
+      })
+      .then((result) => {
+        if (result.response === 0) {
+          // 0 = Restart
+          autoUpdater.quitAndInstall();
+        }
+      });
+  });
 });
 
 // Menangani penutupan jendela
