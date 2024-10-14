@@ -4,6 +4,12 @@ copyright: Copyright © 2018 Yoshihide Shiono
 directories:
   output: dist
   buildResources: resources
+win:
+  artifactName: "myNextronApp.${version}.${ext}"
+mac:
+  artifactName: "myNextronApp.${version}.${ext}"
+linux:
+  artifactName: "myNextronApp.${version}.${ext}"
 files:
   - from: .
     filter:
